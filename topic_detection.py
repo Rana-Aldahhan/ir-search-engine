@@ -17,6 +17,10 @@ def create_trained_lsi_model(dataset: str):
     doc_similarity_index = similarities.MatrixSimilarity(lsi_model[corpus])
     doc_similarity_index.save('lsi_models/' + dataset + '_index_file')
     print("finished creating matrix of similarity between docs")
+    # Save the order of document IDs
+    with open('lsi_models/' + dataset + '_doc_ids', 'w') as f:
+        for doc_id in document_vectors.keys():
+            f.write(f'{doc_id}\n')
 
 
 def create_lsi_corpus_and_dictionary(weighted_inverted_index: Dict[str, List[Dict[str, float]]],
@@ -35,15 +39,18 @@ def create_lsi_corpus_and_dictionary(weighted_inverted_index: Dict[str, List[Dic
     return dictionary, corpus
 
 
-def compute_similarity_and_rank_documents(index: similarities.MatrixSimilarity, query_lsi: List[Tuple[int, float]],
-                                          document_vectors: Dict[str, Dict[str, float]]) -> Dict[str, float]:
+def compute_similarity_and_rank_documents(index: similarities.MatrixSimilarity,query_lsi: List[Tuple[int, float]]
+                                          ,dataset: str) -> Dict[str,float]:
     # Compute the similarity between the query and each document
     similarity = index[query_lsi]
 
+    # Load the order of document IDs
+    with open('lsi_models/' + dataset + '_doc_ids', 'r') as f:
+        doc_ids = [line.strip() for line in f]
+
     # Rank documents based on similarity to the query
-    doc_ids = list(document_vectors.keys())
     similarity_dict = dict(zip(doc_ids, similarity))
-    sorted_ranking = dict(sorted(similarity_dict.items(), key=lambda item: item[1], reverse=True)[:15])
+    sorted_ranking = dict(sorted(similarity_dict.items(), key=lambda item: item[1], reverse=True))
 
     return sorted_ranking
 
@@ -70,6 +77,6 @@ def ranking(query: str, dataset: str) -> Dict[str, float]:
     # Transform the query into the topic space defined by the LSI model
     query_lsi = lsi_model[query_bow]
 
-    sorted_ranking = compute_similarity_and_rank_documents(doc_similarity_index, query_lsi, document_vectors)
+    sorted_ranking = compute_similarity_and_rank_documents(doc_similarity_index, query_lsi, dataset)
 
     return sorted_ranking
