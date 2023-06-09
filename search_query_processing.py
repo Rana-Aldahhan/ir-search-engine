@@ -29,10 +29,7 @@ def _get_sliced_results_template(ordered_full_docs: dict) -> dict:
 
 
 def ranking_call(retrieving_relevant_on: str, query: str, dataset: str) -> list:
-    if retrieving_relevant_on == "terms":
-        return list(ranking(query, dataset).keys())
-    # else:  # retrieving_relevant_on == "topics":
-    #      return list(topic_detection_ranking(query, dataset).keys())
+    return list(ranking(query, dataset).keys())
 
 
 def get_search_result(query: str, dataset: str, retrieving_relevant_on: str) -> dict:
