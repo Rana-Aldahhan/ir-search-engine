@@ -2,7 +2,7 @@ import math
 import shelve
 from collections import defaultdict
 from typing import Dict
-
+from crawler import expand_document_with_crawled_data
 import ir_datasets
 
 from text_preprocessing import get_preprocessed_text_terms
@@ -54,7 +54,7 @@ def __get_corpus(dataset_name: str) -> Dict[str, str]:
         A dictionary mapping document IDs to document content.
     """
     if dataset_name == "technology":
-        random_corpus = dict(ir_datasets.load("lotte/technology/test").docs_iter()[:100000])
+        random_corpus = dict(ir_datasets.load("lotte/technology/test").docs_iter()[:10])
         random_corpus_ids = set(random_corpus.keys())
 
         forum_qrels = list(ir_datasets.load("lotte/technology/test/forum").qrels_iter())
@@ -74,7 +74,7 @@ def __get_corpus(dataset_name: str) -> Dict[str, str]:
         corpus = {doc_id: doc.text for doc_id, doc in mapped_docs.items()}
 
     else:  # dataset_name == "quora":
-        random_corpus = dict(ir_datasets.load("beir/quora/test").docs_iter()[:100000])
+        random_corpus = dict(ir_datasets.load("beir/quora/test").docs_iter()[:10])
         random_corpus_ids = set(random_corpus.keys())
 
         qrels = list(ir_datasets.load("beir/quora/test").qrels_iter())
@@ -211,8 +211,15 @@ def create_weighted_inverted_index(dataset_name: str) -> None:
         None
     """
     corpus = __get_corpus(dataset_name)
+
+    # perform crawling and expand crawled documents
+    crawled_corpus = dict()
+    for doc_id, doc_content in corpus.items():
+        print(f"checking crawling ability in {doc_id}")
+        crawled_corpus[doc_id] = expand_document_with_crawled_data(doc_content)
+    print("finished crawling")
     weighted_inverted_index = defaultdict(list)
-    vectors = _create_docs_vectors(corpus, dataset_name)
+    vectors = _create_docs_vectors(crawled_corpus, dataset_name)
     for doc_id, doc_weighted_terms in vectors.items():
         for term, weight in doc_weighted_terms.items():
             weighted_inverted_index[term].append({doc_id: weight})

@@ -90,14 +90,14 @@ def evaluate(dataset: str, dataset_name: str, k=None):
             #     break
     ranked_docs = {}
     queries = dict(ir_datasets.load(dataset).queries_iter())
-    i = 0
+    # i = 0
     for query_id in queries.keys():
         results = ranking(queries[query_id], dataset_name)
         ranked_docs[query_id] = results
         print(f"currently ranking {query_id}")
-        i = i + 1
-        if i == 3000:
-            break
+        # i = i + 1
+        # if i == 3000:
+        #     break
     evaluation = compute_metrics(ranked_docs, qrelsMap, k)
     print(evaluation)
 
@@ -105,9 +105,9 @@ def evaluate(dataset: str, dataset_name: str, k=None):
 from inverted_index_store import set_inverted_index_store_global_variables
 set_inverted_index_store_global_variables()
 print("technology forum evaluation")
-#evaluate("lotte/technology/test/forum", "technology")
+evaluate("lotte/technology/test/forum", "technology")
 print("technology search evaluation")
-#evaluate("lotte/technology/test/search", "technology")
+evaluate("lotte/technology/test/search", "technology")
 print("quora evaluation")
 evaluate("beir/quora/test", "quora")
 

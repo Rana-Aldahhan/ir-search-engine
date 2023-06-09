@@ -1,4 +1,5 @@
 import re
+import string
 from datetime import datetime
 
 import pycountry
@@ -33,9 +34,12 @@ def get_preprocessed_text_terms(text: str, dataset_name: str) -> list:
     c = _normalize_country_names(d)
     # 5) Stemming: stemming the tokens
     stemmed_tokens = _stem_tokens(c)
+    foreign_characters_filtered_words = _get_foreign_characters_filtered_tokens(stemmed_tokens)
+    return foreign_characters_filtered_words
 
-    return stemmed_tokens
-
+def _get_foreign_characters_filtered_tokens(terms):
+    clean_list = [x for x in terms if all(c in string.printable for c in x)]
+    return clean_list
 
 def _get_words_tokenize(text: str) -> list:
     """
