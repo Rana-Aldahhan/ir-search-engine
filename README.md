@@ -11,64 +11,53 @@ A university project that uses two datasets from [ir-datasets](https://ir-datase
 - [**Technology**](https://ir-datasets.com/lotte.html#lotte/technology/dev).
 ## Branches
 
-In this project, we use branches to work on different features. Our main branch is called "main" and represents the main and stable features of our code.
+In this project, we use branches to work on different features. Our main branch is called "master" and represents the main and stable features of our code.
 
 The purpose of each branch is as follows:
 
-- **main branch**: This branch represents the main stable requirements of the search engine system.
+- [**master branch**](https://github.com/Rana-Aldahhan/ir-search-engine): This branch represents the main stable requirements of the search engine system.
 
 
-- **crawling branch**: This branch is where crawling feature is enabled to get data from links found inside the documents.
+- [**crawling branch**](https://github.com/Rana-Aldahhan/ir-search-engine/tree/crawling): This branch is where crawling feature is enabled to get data from links found inside the documents.
 
 
-- **query_refinement branch**: This branch is where query suggestions feature is enabled to suggest queries to the user based on old queries searched.
+- [**query_refinement branch**](https://github.com/Rana-Aldahhan/ir-search-engine/tree/query_refinement): This branch is where query suggestions feature is enabled to suggest queries to the user based on old queries searched.
+
+
+- [**topic_detection branch**](https://github.com/Rana-Aldahhan/ir-search-engine/tree/topic_detection): This branch is where topic detection feature is enabled to rank documents based on query topic.
 
 
 ## How to use the search engine?
 
-you can go to the following link, add your query and get the results of the chosen dataset easily with a simple Vue web app.
+After running your project locally you can perform your query and get the results of the chosen dataset easily with a [simple Vue web app](https://gitlab.com/rana-aldahhan/ir-search-engine).
 
-www.google.com
+
+## How to run the project?
+
+Install required packages. 
+
+Run inverted_index_factory.py file for the first time to set the database on your device.
+
+Running *query_refinement* branch for the first time requires running queries_db_initializer.py file first.
+
+Running *topic_detection* branch for the first time requires running LSI_model_factory.py file first.
+
+Running *crawler* branch for requires running inverted_index_factory.py file first.
+
+Run app.py file then you can access any service by you localhost:YOUR-PORT/SERVICE-ENDPOINT
+
+
 ## Services
 
-
-- **Inverted Index Factory**:
-
-Creates a documents weighted inverted index and a queries unweighted inverted index for each dataset and stores them. 
-
-
-the following API runs the inverted index factory:
-
-    - /inverted-index-factory
-
-- **Set Global Variables**:
-
-Gets a weighted inverted index and documents vector for both technology and quora from a "shelve" file and assign it to its global variable.
-
-
-the following API runs the set global variables service:
-
-    - /set-global-variables
+*note that service might behave differently based on the selected branch*
 
 - **Search**:
 
-Performs search query and get full documnents results based on passed query, dataset and ranking type passed.
+Performs search query and get full documnents results based on passed query and dataset passed.
 
 the following APIs runs the search service on our project:
 
-        - /search?query="YOUR-QUERY"&dataset="quora/technology"?ranking-type="terms/topics"
-
-- **Evaluation**:
-
-The implemented evaluation metrics are **Precision**, **Recall**, **F1_score**, **MAP**, **MRR** and **Precision@10**.
-
-the following APIs run the evaluation service on our datasets:
-
-        - /evaluation/quora
-
-        - /evaluation/technology/search
-
-        - /evaluation/technology/forum
+    - GET: /search?query="YOUR-QUERY"&dataset="quora/technology"
 
 - **Text Processing**:
 
@@ -78,97 +67,92 @@ The implemented text processing steps are:
 1. **Tokenizing**
 
 
-2. **Cleaning**
+2. **Lowerization**
+
+
+3. **Cleaning**
 
 
 3. **Filtration**
 
 
-4. **Normalize dates**
+5. **Normalize dates**
 
 
-5. **Normalize countries**
+6. **Normalize countries**
 
 
-6. **Correction**
+7. **Stemming**
 
 
-7. **Lowerization**
+the following API runs the text processing service on the provided text and dataset:
+
+    - GET: /process-text?text="YOUR-TEXT"&dataset="quora/technology"
 
 
-8. **Lemmatization**
+- **Ranking**:
 
-
-the following API runs the text processing service on the provided text:
-
-    - /text-processing/THE-TEXT-YOU-WANT-TO-PROCESS
-
-
-- **Terms Ranking**:
-
-Performs a query search and returns ranked documents based on cosine similarity calculation between the given query and related documents. 
+Performs a query search and returns ranked documents. 
 
 the following API runs the Ranking service:
 
-    - /terms-ranking?query="YOUR-QUERY"&dataset="quora/technology"
+    - GET: /ranking?query="YOUR-QUERY"&dataset="quora/technology"
 
-- **LSI Factory**:
+- **Get Inverted Index**:
 
-Creates a LSI trained model for each dataset and stores them. 
+Gets the weighted inverted index for the given dataset. 
 
-the following API runs the set global variables service:
+the following API runs the Get Inverted Index service:
 
-    - /LSI-factory
+    - GET: /inverted-index?dataset="quora/technology"
 
-- **Topic Detection Ranking**:
+- **Create Inverted Index**:
 
-Performs a query search and return ranked documents based on topic detection feature. 
+Creates the weighted inverted index for the given dataset. 
 
-the following API runs the Topic Detection Ranking service:
+the following API runs the Create Inverted Index service:
 
-    - /topic-detection-ranking?query="YOUR-QUERY"&dataset="quora/technology"
+    - POST: /inverted-index
 
-- **Query TF-IDF**:
+        body : {dataset : "quora/technology"}
 
-Calculates the TF-IDF for a given query and dataset name.
+- **Get Document Vector**:
 
-the following API runs the Query TF-IDF service:
+Gets the document vector for the given document and dataset. 
 
-    - /query-tf-idf?query="YOUR-QUERY"&dataset="quora/technology"
+the following API runs the Get Document Vector service:
 
-- **Initialize Queries Database** (query_refinement Branch):
+    - GET: /document-vector?dataset="quora/technology"&doc_id="DOCUMENT-ID"
 
-Initializes queries database to store performed queries in it.
+- **Get Documents Vector**:
 
-the following API runs the Initialize Queries Database service:
+Gets the documents vector for the given dataset. 
 
-    - /initialize-queries-db
+the following API runs the Get Documents Vector service:
 
-- **Set Query Refinement Global Variables** (query_refinement Branch):
+    - GET: /documents-vector?dataset="quora/technology"
 
-Gets queries for both technology and quora from a "shelve" file and assign it to its global variable.
+- **Get Query TF-IDF**:
 
-the following API runs the Set Query Refinement Global Variables service:
+Calculates the query TF-Idf for the given query and dataset. 
 
-    - /set-query-refinement-global-variables
+the following API runs the Get Documents Vector service:
 
-- **Get Ranked Query Suggestions** (query_refinement Branch):
+    - GET: /query-tfidf?query="YOUR-QUERY"&dataset="quora/technology"
+
+- **Query Suggestions** (query_refinement Branch):
 
 Performs a query suggestions search and returns ranked suggestions to the given query and dataset.
 
-the following API runs the Get Ranked Query Suggestions service:
+the following API runs the Query Suggestions service:
 
-    - /suggestions?query="YOUR-QUERY"&dataset="quora/technology"
+    - GET: /suggestions?query="YOUR-QUERY"&dataset="quora/technology"
 
-- **Expand Document With Crawled Data** (crawler Branch):
+- ## Evaluation:
 
-Takes a document content string as input and returns an updated document content string with crawled data from any URLs present in the input document content.
+The implemented evaluation metrics are **Precision**, **Recall**, **F1_score**, **MAP**, **MRR** and **Precision@10**.
 
-*this service is used inside inverted index store for this branch*
-
-the following API runs the Expand Document With Crawled Data service:
-
-    - /expand-document-with-crawled-data?doc_content="CONTENT"
+to run the evaluation just go to evaluation.py file and run it.
 
 
 ## Students
