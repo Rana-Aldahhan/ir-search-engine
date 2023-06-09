@@ -7,6 +7,7 @@ from inverted_index_store import set_inverted_index_store_global_variables, get_
     create_weighted_inverted_index, get_document_vector, get_documents_vector
 from matching_and_ranking import ranking
 from query_processing import calculate_query_tfidf
+from query_refinement import set_query_refinement_global_variables, get_ranked_query_suggestions, index_query
 from search_query_processing import get_search_result
 from text_preprocessing import get_preprocessed_text_terms
 
@@ -20,8 +21,16 @@ def search():
     query = request.args.get('query')
     dataset = request.args.get('dataset')
     retrieving_relevant_on = "terms"  # "terms" or "topics"
+    index_query(query, dataset)
     return get_search_result(query, dataset, retrieving_relevant_on)
 
+
+@app.route('/suggestions', methods=['GET'])
+@cross_origin()
+def get_suggestions():
+    query = request.args.get('query')
+    dataset = request.args.get('dataset')
+    return get_ranked_query_suggestions(query, dataset)
 
 
 @app.route('/process-text', methods=['GET'])
@@ -81,4 +90,5 @@ def get_ranking():
 
 if __name__ == "__main__":
     set_inverted_index_store_global_variables()
+    set_query_refinement_global_variables()
     app.run(debug=True)
