@@ -1,4 +1,6 @@
 db/*
 !db/.fileForDelete
+lsi_models/*
+!lsi_models/.fileForDelete
 .idea
 __pycache__

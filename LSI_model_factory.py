@@ -1,0 +1,7 @@
+from inverted_index_store import set_inverted_index_store_global_variables
+from topic_detection import create_trained_lsi_model
+
+set_inverted_index_store_global_variables()
+create_trained_lsi_model("technology")
+create_trained_lsi_model("quora")
+
