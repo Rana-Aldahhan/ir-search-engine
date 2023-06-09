@@ -1,0 +1,4 @@
+db/*
+!db/.fileForDelete
+.idea
+__pycache__
